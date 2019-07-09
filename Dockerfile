@@ -19,10 +19,10 @@ RUN apt-get install -y openjdk-8-jdk \
 	wget
 
 # Install Python 3.7 and set it as default python3 and python
-RUN add-apt-repository -y ppa:deadsnakes/ppa 
-RUN apt-get install -y python3.7 && \ 
+RUN apt-get install -y python3.7 python3-pip && \ 
 	ln -sf /usr/bin/python3.7 /usr/bin/python3 && \
-	ln -sf /usr/bin/python3.7 /usr/bin/python
+	ln -s /usr/bin/python3.7 /usr/bin/python && \
+	ln -s /usr/bin/pip3 /usr/bin/pip
 
 # Install Spark and hadoop 
 # starting from https://spark.apache.org/downloads.html
