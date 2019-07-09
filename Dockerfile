@@ -10,10 +10,17 @@ USER root
 ENV APACHE_SPARK_VERSION 2.4.3
 ENV HADOOP_VERSION 2.7
 
-# Install Java 8 JDK and other dependencies
-RUN apt-get update --fix-missing
-RUN apt-get install -y openjdk-8-jdk\ 
+# Install Java 8 JDK and other prerequisites
+RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
+RUN apt-get update --fix-missing 
+RUN apt-get install -y openjdk-8-jdk \ 
+	software-properties-common \
 	wget
+
+# Install Python 3.7 and set it as default python3
+RUN add-apt-repository -y ppa:deadsnakes/ppa 
+RUN apt-get install -y python3.7 && \ 
+	ln -sf /usr/bin/python3.7 /usr/bin/python3
 
 # Install Spark and hadoop 
 # starting from https://spark.apache.org/downloads.html
@@ -23,7 +30,6 @@ RUN cd /tmp && \
     tar xzf spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz -C /usr/local --owner root --group root --no-same-owner && \
     rm spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz
 RUN cd /usr/local && ln -s spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION} spark
-
 
 
 
