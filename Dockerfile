@@ -5,6 +5,7 @@
 FROM ubuntu:18.04
 
 USER root
+ENV DEBIAN_FRONTEND noninteractive
 
 # relevant versions to install
 ENV APACHE_SPARK_VERSION 2.4.3
