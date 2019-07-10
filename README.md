@@ -9,5 +9,5 @@ This docker image is designed to be a platform for the PrairieLearn autograder f
 - matplotlib  
 - seaborn 
 - sqlalchemy  
-- jupyter  
 
+Additionally, Jupyter is installed for running notebooks and as a first step towards using nbgrader for grading notebook submissions. 
