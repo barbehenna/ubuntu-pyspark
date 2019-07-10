@@ -1,6 +1,6 @@
 # Copyright (c) Alton Barbehenn.
-# Based on the Jupyter Development Team's jupyter/pyspark-notebook 
-# on DockerHub July 9, 2019
+# In part based on the Jupyter Development Team's jupyter/pyspark-notebook 
+# (accessed on DockerHub July 9, 2019)
 
 FROM ubuntu:18.04
 
@@ -52,7 +52,6 @@ RUN pip install numpy \
 # Start notebook with `jupyter notebook --ip=0.0.0.0`
 USER $NB_UID
 
-
-
-
+# Add user for autograder (like the prairielearn/centos7-python image)
+RUN useradd ag
 
