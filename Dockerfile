@@ -7,6 +7,9 @@ FROM ubuntu:18.04
 USER root
 ENV DEBIAN_FRONTEND noninteractive
 
+# Needed to properly handle UTF-8
+ENV PYTHONIOENCODING=UTF-8
+
 # relevant versions to install
 ENV APACHE_SPARK_VERSION 2.4.3
 ENV HADOOP_VERSION 2.7
@@ -16,8 +19,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
 RUN apt-get update --fix-missing 
 RUN apt-get install -y openjdk-8-jdk \ 
 	software-properties-common \ 
-	wget
-
+	wget sudo 
+	
 # Install Python 3.7 and set it as default python3 and python
 RUN apt-get install -y python3.7 python3-pip && \ 
 	ln -sf /usr/bin/python3.7 /usr/bin/python3 && \ 
@@ -36,21 +39,25 @@ RUN cd /usr/local && ln -s spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERS
 # Set enviromental variables 
 ENV SPARK_HOME /usr/local/spark
 ENV PYTHONPATH $SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.10.7-src.zip
+ENV PATH $SPARK_HOME/bin:$PATH
+
+COPY jars/* $SPARK_HOME/jars/
 
 # Install python libraries
-RUN pip install numpy \ 
+RUN pip install --no-cache-dir numpy \ 
 	pandas \ 
 	scipy \ 
 	scikit-learn \ 
 	matplotlib \ 
 	seaborn \ 
 	sqlalchemy \ 
-	jupyter 
+	jupyter \ 
+	boto3 \ 
+	s3fs \ 
+	azure \ 
+	pyarrow
 
-# Change user from root 
-# This let's us use jupyter notebooks without a `--allow-root` flag
 # Start notebook with `jupyter notebook --ip=0.0.0.0`
-USER $NB_UID
 
 # Add user for autograder (like the prairielearn/centos7-python image)
 RUN useradd ag
