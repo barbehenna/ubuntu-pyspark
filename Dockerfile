@@ -9,7 +9,6 @@ MAINTAINER barbehe2@illinois.edu
 
 
 USER root
-# ENV DEBIAN_FRONTEND noninteractive
 
 
 # Needed to properly handle UTF-8
@@ -85,6 +84,28 @@ RUN python3 -m pip install --no-cache-dir -r /requirements.txt
 # Start notebook with `jupyter notebook --ip=0.0.0.0`
 
 
+# Install PostgreSQL 
+# example Dockerfile for https://docs.docker.com/engine/examples/postgresql_service/
+# Needed to aviod entering timezone info when installing PostgreSQL (hide warnings on build)
+ENV DEBIAN_FRONTEND noninteractive
+
+
+RUN apt-get install -y postgresql postgresql-contrib postgresql-server-dev-all
+	
+
+USER postgres
+
+
+RUN /etc/init.d/postgresql start && \
+	psql --command "CREATE USER docker WITH SUPERUSER PASSWORD 'docker';" && \
+	createdb -O docker docker
+
+
 # Add user for autograder (like the prairielearn/centos7-python image)
+USER root
 RUN useradd ag
 
+
+# start postgresql
+# need to run this when the image launches
+# RUN service postgresql start
