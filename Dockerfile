@@ -14,20 +14,26 @@ USER root
 # Needed to properly handle UTF-8
 ENV PYTHONIOENCODING=UTF-8
 
+# Needed to aviod entering timezone info when installing PostgreSQL (hide warnings on build)
+ENV DEBIAN_FRONTEND noninteractive
 
-# relevant versions to install
+# Relevant versions to install
 ENV APACHE_SPARK_VERSION 2.4.3
 ENV HADOOP_VERSION 2.7
+ENV HADOOP_NATIVE_VERSION 2.7.7
 
 
 # Install Java 8 JDK and other prerequisites
 # Also install python 3.7
+# Install PostgreSQL 
+# Example Dockerfile for https://docs.docker.com/engine/examples/postgresql_service/
 RUN apt-get update && \
 	apt-get install -y --no-install-recommends apt-utils
 RUN apt-get update --fix-missing 
 RUN apt-get install -y openjdk-8-jdk \
 	software-properties-common \
 	python3.7 python3-pip python3.7-dev \
+	postgresql postgresql-contrib postgresql-server-dev-all \
 	sudo \
 	make \
 	wget
@@ -40,7 +46,6 @@ RUN ln -sf /usr/bin/python3.7 /usr/bin/python3 && \
 
 
 # Install native Hadoop library
-ENV HADOOP_NATIVE_VERSION 2.7.7
 RUN cd /tmp && \
 	wget -q https://www-us.apache.org/dist/hadoop/common/hadoop-${HADOOP_NATIVE_VERSION}/hadoop-${HADOOP_NATIVE_VERSION}.tar.gz && \
 	tar xzf hadoop-${HADOOP_NATIVE_VERSION}.tar.gz -C /usr/local/ && \
@@ -55,7 +60,7 @@ ENV PATH $HADOOP_HOME/bin:$PATH
 
 
 # Install Spark and Hadoop 
-# starting from https://spark.apache.org/downloads.html
+# Starting from https://spark.apache.org/downloads.html
 RUN cd /tmp && \
     wget -q http://mirror.cogentco.com/pub/apache/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz && \
     echo "E8B7F9E1DEC868282CADCAD81599038A22F48FB597D44AF1B13FCC76B7DACD2A1CAF431F95E394E1227066087E3CE6C2137C4ABAF60C60076B78F959074FF2AD *spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" | sha512sum -c - && \
@@ -74,41 +79,29 @@ ENV PATH $SPARK_HOME/bin:$PATH
 COPY jars/* $SPARK_HOME/jars/
 
 
-# Get list of python libraries
-COPY requirements.txt /
-
-
-# Install python libraries
-RUN python3 -m pip install --no-cache-dir -r /requirements.txt
-
-
-# Start notebook with `jupyter notebook --ip=0.0.0.0`
-
-
-# Install PostgreSQL 
-# example Dockerfile for https://docs.docker.com/engine/examples/postgresql_service/
-# Needed to aviod entering timezone info when installing PostgreSQL (hide warnings on build)
-ENV DEBIAN_FRONTEND noninteractive
-
-
-RUN apt-get install -y postgresql postgresql-contrib postgresql-server-dev-all
-	
-
+# Set up postgresql 
 USER postgres
-
-
 RUN /etc/init.d/postgresql start && \
 	psql --command "CREATE USER docker WITH SUPERUSER PASSWORD 'docker';" && \
 	createdb -O docker docker
 
 
-# Add user for autograder (like the prairielearn/centos7-python image)
+# Return to root user
 USER root
+
+
+# Get list of python libraries and install them
+COPY requirements.txt /
+RUN python3 -m pip install --no-cache-dir -r /requirements.txt
+# Start notebook with `jupyter notebook --ip=0.0.0.0`
+
+
+# Add user for autograder (like the prairielearn/centos7-python image)
 RUN useradd ag
 
 
 # start postgresql
-# need to run this when the image launches
+# Need to run this when the image launches
 # RUN service postgresql start
 # CMD service postgresql start; /bin/bsh
 
