@@ -27,7 +27,7 @@ RUN apt-get update && \
 RUN apt-get update --fix-missing 
 RUN apt-get install -y openjdk-8-jdk \
 	software-properties-common \
-	python3.7 python3-pip \
+	python3.7 python3-pip python3.7-dev \
 	sudo \
 	make \
 	wget
@@ -40,11 +40,12 @@ RUN ln -sf /usr/bin/python3.7 /usr/bin/python3 && \
 
 
 # Install native Hadoop library
+ENV HADOOP_NATIVE_VERSION 2.7.7
 RUN cd /tmp && \
-	wget -q https://www-us.apache.org/dist/hadoop/common/hadoop-2.7.6/hadoop-2.7.6.tar.gz && \
-	tar xzf hadoop-2.7.6.tar.gz -C /usr/local/ && \
-	ln -s /usr/local/hadoop-2.7.6 /usr/local/hadoop && \
-	rm hadoop-2.7.6.tar.gz
+	wget -q https://www-us.apache.org/dist/hadoop/common/hadoop-${HADOOP_NATIVE_VERSION}/hadoop-${HADOOP_NATIVE_VERSION}.tar.gz && \
+	tar xzf hadoop-${HADOOP_NATIVE_VERSION}.tar.gz -C /usr/local/ && \
+	ln -s /usr/local/hadoop-${HADOOP_NATIVE_VERSION} /usr/local/hadoop && \
+	rm hadoop-${HADOOP_NATIVE_VERSION}.tar.gz
 
 
 # Set enviromental variables 
