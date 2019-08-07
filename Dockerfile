@@ -109,3 +109,5 @@ RUN useradd ag
 # start postgresql
 # need to run this when the image launches
 # RUN service postgresql start
+# CMD service postgresql start; /bin/bsh
+
