@@ -28,7 +28,7 @@ RUN apt-get update && \
 RUN apt-get update --fix-missing 
 RUN apt-get install -y openjdk-8-jdk \
 	software-properties-common \
-	python3.7 python3-pip \
+	python3.7 python3-pip python3.7-dev \
 	sudo \
 	make \
 	wget
