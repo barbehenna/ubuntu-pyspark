@@ -17,8 +17,8 @@ ENV PYTHONIOENCODING=UTF-8
 
 
 # relevant versions to install
-ENV APACHE_SPARK_VERSION 2.4.4
-ENV HADOOP_VERSION 2.7
+ENV APACHE_SPARK_VERSION 3.0.1
+ENV HADOOP_VERSION 3.2
 
 
 # Install Java 8 JDK and other prerequisites
@@ -41,9 +41,10 @@ RUN ln -sf /usr/bin/python3.7 /usr/bin/python3 && \
 
 
 # Install native Hadoop library
-ENV HADOOP_NATIVE_VERSION 2.7.7
+ENV HADOOP_NATIVE_VERSION 3.2.2
 RUN cd /tmp && \
 	wget -q https://www-us.apache.org/dist/hadoop/common/hadoop-${HADOOP_NATIVE_VERSION}/hadoop-${HADOOP_NATIVE_VERSION}.tar.gz && \
+	echo "054753301927d31a69b80be3e754fd330312f0b1047bcfa4ab978cdce18319ed912983e6022744d8f0c8765b98c87256eb1c3017979db1341d583d2cee22d029 hadoop-${HADOOP_NATIVE_VERSION}.tar.gz" | sha512sum -c - && \
 	tar xzf hadoop-${HADOOP_NATIVE_VERSION}.tar.gz -C /usr/local/ && \
 	ln -s /usr/local/hadoop-${HADOOP_NATIVE_VERSION} /usr/local/hadoop && \
 	rm hadoop-${HADOOP_NATIVE_VERSION}.tar.gz
@@ -59,10 +60,10 @@ ENV PATH $HADOOP_HOME/bin:$PATH
 # starting from https://spark.apache.org/downloads.html
 RUN cd /tmp && \
     wget -q https://www.apache.org/dist/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz && \
-    echo "2E3A5C853B9F28C7D4525C0ADCB0D971B73AD47D5CCE138C85335B9F53A6519540D3923CB0B5CEE41E386E49AE8A409A51AB7194BA11A254E037A848D0C4A9E5 *spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" | sha512sum -c - && \
-    tar xzf spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz -C /usr/local --owner root --group root --no-same-owner && \
+    echo "E8B47C5B658E0FBC1E57EEA06262649D8418AE2B2765E44DA53AAF50094877D17297CC5F0B9B35DF2CEEF830F19AA31D7E56EAD950BBE7F8830D6874F88CFC3C spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" | sha512sum -c - && \
+    tar xzf spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz -C /usr/local/ && \
+	ln -s /usr/local/spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION} /usr/local/spark && \
     rm spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz
-RUN cd /usr/local && ln -s spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION} spark
 
 
 # Set enviromental variables 
@@ -72,7 +73,7 @@ ENV PATH $SPARK_HOME/bin:$PATH
 
 
 # Copy custom jars to enable Spark-Azure connection
-COPY jars/* $SPARK_HOME/jars/
+# COPY jars/* $SPARK_HOME/jars/
 
 
 # Get list of python libraries
