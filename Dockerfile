@@ -68,7 +68,7 @@ RUN cd /tmp && \
 
 # Set enviromental variables 
 ENV SPARK_HOME /usr/local/spark
-ENV PYTHONPATH $SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.10.7-src.zip
+ENV PYTHONPATH $SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.10.9-src.zip
 ENV PATH $SPARK_HOME/bin:$PATH
 
 
