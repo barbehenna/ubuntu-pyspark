@@ -31,7 +31,8 @@ RUN apt-get install -y openjdk-8-jdk \
 	python3.7 python3-pip python3.7-dev \
 	sudo \
 	make \
-	wget
+	wget \
+	uuid-runtime
 
 
 # Set up Python 3.7 and set it as default python3 and python
